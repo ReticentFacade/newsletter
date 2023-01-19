@@ -1,0 +1,32 @@
+# The .yml files in this specific folder store the instructions to run your Github Actions.
+
+name: Daily newsletter workflow
+
+on:
+  schedule: 
+    # Send newsletter daily at 7:15 am
+    -cron: '15 7 * * *'
+    # This helps you manually run the workflow in the repository's 'Actions' tab.
+    workflow_dispatch:
+
+jobs: 
+  Query-And-Notification: 
+    runs-on: ubuntu-latest
+
+    steps: 
+    -uses: actions/checkout@v2
+    -uses: actions/setup-python@v2
+     with: 
+      python-version: 3.10.9
+    -name: Install dependencies
+     run: | 
+      python3 -m pip install --upgrade pip
+      python3 -m pip install python-dotenv
+
+    -name: Send newsletter to the subscribers
+      env:
+        EMAIL_SENDER: ${{secrets.EMAIL_SENDER}}
+        EMAIL_PW: ${{secrets.EMAIL_PW}}
+      run: | 
+        python3 newsletter.py
+    
